@@ -7,7 +7,18 @@ export interface AuthRequest extends Request {
   params: any;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+// BREAKING CHANGE: JWT_SECRET is now required. The server will refuse to start
+// without it. Previously it fell back to a hardcoded default that was visible in
+// source code, allowing anyone to forge auth tokens. Ensure JWT_SECRET is set in
+// all deployment environments (staging, production) before deploying this change.
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required. Set it to a strong random secret (32+ characters).');
+  }
+  return secret;
+}
+const JWT_SECRET: string = getJwtSecret();
 
 export function authenticateToken(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
