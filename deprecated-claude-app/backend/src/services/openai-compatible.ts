@@ -74,8 +74,8 @@ export class OpenAICompatibleService {
       
       console.log(`[OpenAI-Compatible] Making request to: ${endpoint}`);
       if (process.env.LOG_DEBUG === 'true') {
-      console.log(`[OpenAI-Compatible] Model: ${actualModelId}`);
-      console.log(`[OpenAI-Compatible] Request body:`, JSON.stringify(requestBody, null, 2));
+        console.log(`[OpenAI-Compatible] Model: ${actualModelId}`);
+        console.log(`[OpenAI-Compatible] Request body keys:`, Object.keys(requestBody));
       }
 
       const response = await fetch(endpoint, {

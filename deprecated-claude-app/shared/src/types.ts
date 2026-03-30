@@ -793,7 +793,9 @@ export const InviteSchema = z.object({
   useCount: z.number().default(0),
   // Legacy fields for backwards compatibility (stores last claimer for single-use)
   claimedBy: z.string().uuid().optional(),
-  claimedAt: z.string().optional()
+  claimedAt: z.string().optional(),
+  // Track which users have claimed to prevent the same user claiming multiple times
+  claimedByUsers: z.array(z.string()).default([])
 });
 
 export type Invite = z.infer<typeof InviteSchema>;

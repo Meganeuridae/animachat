@@ -690,7 +690,8 @@ export class Database {
       currency,
       expiresAt,
       maxUses,
-      useCount: 0
+      useCount: 0,
+      claimedByUsers: []
     };
 
     this.invites.set(code, invite);
@@ -703,7 +704,7 @@ export class Database {
     return this.invites.get(code) || null;
   }
 
-  validateInvite(code: string): { valid: boolean; error?: string; invite?: Invite } {
+  validateInvite(code: string, userId?: string): { valid: boolean; error?: string; invite?: Invite } {
     const invite = this.invites.get(code);
 
     if (!invite) {
@@ -714,6 +715,11 @@ export class Database {
     const useCount = invite.useCount ?? 0;
     if (invite.maxUses !== undefined && useCount >= invite.maxUses) {
       return { valid: false, error: 'This invite has reached its maximum uses' };
+    }
+
+    // Prevent the same user from claiming an invite more than once
+    if (userId && invite.claimedByUsers?.includes(userId)) {
+      return { valid: false, error: 'You have already claimed this invite' };
     }
 
     // Legacy check for old single-use invites that predate the useCount system
@@ -729,16 +735,18 @@ export class Database {
   }
 
   async claimInvite(code: string, claimedBy: string): Promise<void> {
-    const validation = this.validateInvite(code);
+    const validation = this.validateInvite(code, claimedBy);
     if (!validation.valid || !validation.invite) {
       throw new Error(validation.error || 'Invalid invite');
     }
 
     const invite = validation.invite;
     const claimedAt = new Date().toISOString();
-    
-    // Increment use count
+
+    // Increment use count and track claiming user
     invite.useCount = (invite.useCount ?? 0) + 1;
+    if (!invite.claimedByUsers) invite.claimedByUsers = [];
+    invite.claimedByUsers.push(claimedBy);
     // Store last claimer info (for backwards compatibility and tracking)
     invite.claimedBy = claimedBy;
     invite.claimedAt = claimedAt;
@@ -1885,13 +1893,23 @@ export class Database {
     
     // Sort daily data by date
     const daily = Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-    
-    // Convert model map to object
+
+    // Convert model map to object, resolving custom model UUIDs to display names
     const byModel: Record<string, { inputTokens: number; outputTokens: number; cachedTokens: number; cost: number; requests: number }> = {};
     for (const [model, data] of modelMap.entries()) {
-      byModel[model] = data;
+      const customModel = this.userModels.get(model);
+      const displayName = customModel?.displayName || model;
+      if (byModel[displayName]) {
+        byModel[displayName].inputTokens += data.inputTokens;
+        byModel[displayName].outputTokens += data.outputTokens;
+        byModel[displayName].cachedTokens += data.cachedTokens;
+        byModel[displayName].cost += data.cost;
+        byModel[displayName].requests += data.requests;
+      } else {
+        byModel[displayName] = data;
+      }
     }
-    
+
     return { daily, totals, byModel };
   }
 
@@ -1976,16 +1994,26 @@ export class Database {
         modelData.requests += 1;
       }
     }
-    
+
     // Sort daily data by date
     const daily = Array.from(dailyMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-    
-    // Convert model map to object
+
+    // Convert model map to object, resolving custom model UUIDs to display names
     const byModel: Record<string, { inputTokens: number; outputTokens: number; cachedTokens: number; cost: number; requests: number }> = {};
     for (const [model, data] of modelMap.entries()) {
-      byModel[model] = data;
+      const customModel = this.userModels.get(model);
+      const displayName = customModel?.displayName || model;
+      if (byModel[displayName]) {
+        byModel[displayName].inputTokens += data.inputTokens;
+        byModel[displayName].outputTokens += data.outputTokens;
+        byModel[displayName].cachedTokens += data.cachedTokens;
+        byModel[displayName].cost += data.cost;
+        byModel[displayName].requests += data.requests;
+      } else {
+        byModel[displayName] = data;
+      }
     }
-    
+
     return { daily, totals, byModel };
   }
 
@@ -3395,15 +3423,19 @@ export class Database {
   }
   
   async updateMessageContent(messageId: string, conversationId: string, conversationOwnerUserId: string, branchId: string, content: string, contentBlocks?: any[]): Promise<boolean> {
-    const message = await this.tryLoadAndVerifyMessage(messageId, conversationId, conversationOwnerUserId);
+    const verified = await this.tryLoadAndVerifyMessage(messageId, conversationId, conversationOwnerUserId);
+    if (!verified) return false;
+
+    // Re-read current state to avoid race conditions with parallel branch updates
+    const message = this.messages.get(messageId);
     if (!message) return false;
-    
+
     const branch = message.branches.find(b => b.id === branchId);
     if (!branch) return false;
-    
+
     // Create new message object with updated content
-    const updatedBranches = message.branches.map(b => 
-      b.id === branchId 
+    const updatedBranches = message.branches.map(b =>
+      b.id === branchId
         ? { ...b, content, contentBlocks }
         : b
     );
@@ -3417,17 +3449,17 @@ export class Database {
   }
 
   async updateMessageBranch(messageId: string, conversationOwnerUserId: string, branchId: string, updates: Partial<MessageBranch>): Promise<boolean> {
-    const message = this.messages.get(messageId);
-    if (!message) return false;
+    const initialMessage = this.messages.get(messageId);
+    if (!initialMessage) return false;
 
-    const branch = message.branches.find(b => b.id === branchId);
+    const branch = initialMessage.branches.find(b => b.id === branchId);
     if (!branch) return false;
 
     // Store debug data as blobs - NEVER keep in memory
     // The full debugRequest includes the entire conversation context and can be 8+ MB
     const updatesForMemory = { ...updates } as any;
     const blobStore = getBlobStore();
-    
+
     // Strip debug data from memory, save to blobs, store only blob IDs
     if (updatesForMemory.debugRequest) {
       try {
@@ -3438,7 +3470,7 @@ export class Database {
       }
       delete updatesForMemory.debugRequest; // Never store in memory
     }
-    
+
     if (updatesForMemory.debugResponse) {
       try {
         const debugResponseBlobId = await blobStore.saveJsonBlob(updatesForMemory.debugResponse);
@@ -3448,6 +3480,10 @@ export class Database {
       }
       delete updatesForMemory.debugResponse; // Never store in memory
     }
+
+    // Re-read current state to avoid race conditions with parallel branch updates
+    const message = this.messages.get(messageId);
+    if (!message) return false;
 
     // Create new message object with updated branch (debug data stripped, only blob IDs)
     const updatedBranches = message.branches.map(b =>

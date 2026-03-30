@@ -333,8 +333,10 @@ function truncateForPersonaBudget(
   console.log(`[PersonaContext] Budget for ${participantName}: contextWindow=${contextWindow}, persona=${personaTokens}, system=${systemTokens}, output=${outputTokens}, available=${available}`);
 
   if (available <= 0) {
-    console.warn(`[PersonaContext] WARNING: Persona context (${personaTokens} tokens) exceeds available budget. Sending minimal conversation.`);
-    return messages.slice(-3);
+    console.warn(`[PersonaContext] WARNING: Persona context (${personaTokens} tokens) exceeds available budget for ${participantName}. Sending last message only.`);
+    // Return only the last message to maximize chance of a successful inference.
+    // Returning more risks exceeding the context window entirely.
+    return messages.slice(-1);
   }
 
   let totalTokens = 0;
@@ -611,9 +613,11 @@ async function runParallelBranchInference(params: ParallelInferenceParams): Prom
 }
 
 export function websocketHandler(ws: AuthenticatedWebSocket, req: IncomingMessage, db: Database) {
-  // Extract token from query params
+  // Extract token from Sec-WebSocket-Protocol header (preferred) or query params (legacy fallback)
+  const protocols = req.headers['sec-websocket-protocol']?.split(',').map(s => s.trim()) || [];
+  const protocolToken = protocols.find(p => p !== 'arc-auth');
   const url = new URL(req.url || '', `http://${req.headers.host}`);
-  const token = url.searchParams.get('token');
+  const token = protocolToken || url.searchParams.get('token');
 
   if (!token) {
     ws.send(JSON.stringify({ type: 'error', error: 'Authentication required' }));
@@ -678,15 +682,15 @@ export function websocketHandler(ws: AuthenticatedWebSocket, req: IncomingMessag
           break;
         
         case 'join_room':
-          handleJoinRoom(ws, message);
+          await handleJoinRoom(ws, message, db);
           break;
-        
+
         case 'leave_room':
           handleLeaveRoom(ws, message);
           break;
         
         case 'typing':
-          handleTyping(ws, message, db);
+          await handleTyping(ws, message, db);
           break;
         
         case 'ping':
@@ -745,14 +749,22 @@ function handleAbort(
 }
 
 // Multi-user room handlers
-function handleJoinRoom(
+async function handleJoinRoom(
   ws: AuthenticatedWebSocket,
-  message: { type: 'join_room'; conversationId: string }
+  message: { type: 'join_room'; conversationId: string },
+  db: Database
 ) {
   if (!ws.userId) return;
-  
+
+  // Verify user has access to this conversation before joining the room
+  const conversation = await db.getConversation(message.conversationId, ws.userId);
+  if (!conversation) {
+    ws.send(JSON.stringify({ type: 'error', error: 'Access denied' }));
+    return;
+  }
+
   roomManager.joinRoom(message.conversationId, ws);
-  
+
   // Send back room state
   ws.send(JSON.stringify({
     type: 'room_joined',
@@ -782,7 +794,11 @@ async function handleTyping(
   db: Database
 ) {
   if (!ws.userId) return;
-  
+
+  // Verify user has access to this conversation
+  const conversation = await db.getConversation(message.conversationId, ws.userId);
+  if (!conversation) return;
+
   // Get user info for display
   const user = await db.getUserById(ws.userId);
   const userDisplayName = user?.email?.split('@')[0] || 'Someone'; // Use username part of email

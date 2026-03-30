@@ -82,8 +82,13 @@ if (USE_HTTPS) {
   server = createHttpServer(app);
 }
 
-const wss = new WebSocketServer({ 
+const wss = new WebSocketServer({
   server,
+  // Accept the arc-auth subprotocol for token-based authentication
+  handleProtocols(protocols) {
+    if (protocols.has('arc-auth')) return 'arc-auth';
+    return false;
+  },
   // Enable per-message deflate compression for large messages
   perMessageDeflate: {
     zlibDeflateOptions: {

@@ -589,7 +589,11 @@ export function authRouter(db: Database): Router {
         return res.status(401).json({ error: 'Unauthorized' });
       }
       const { id } = req.params;
-      const didRemove = db.deleteApiKey(id);
+      const apiKey = await db.getApiKey(id);
+      if (!apiKey || apiKey.userId !== req.userId) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const didRemove = await db.deleteApiKey(id);
       res.json({ success: didRemove });
     } catch (error) {
       console.error('Delete API key error:', error);
