@@ -26,6 +26,7 @@ export const MODEL_COLORS: Record<string, string> = {
   'claude-instant-1.2': '#ffb74d',            // Lighter orange
   
   // OpenAI GPT models - Pink/Magenta shades (distinct from Claude)
+  'gpt-5.4': '#00c853',                       // Vivid green (GPT-5 series — reasoning)
   'gpt-4-turbo': '#e91e63',                   // Pink
   'gpt-4o': '#ad1457',                        // Deep pink
   'gpt-4o-mini': '#ec407a',                   // Light pink
@@ -134,6 +135,9 @@ export function getModelColor(model: string | undefined): string {
   }
   
   // GPT variants
+  if (modelLower.includes('gpt-5.4') || modelLower.includes('gpt-5-4')) {
+    return MODEL_COLORS['gpt-5.4'];
+  }
   if (modelLower.includes('gpt-4-turbo') || modelLower.includes('gpt-4 turbo')) {
     return MODEL_COLORS['gpt-4-turbo'];
   }

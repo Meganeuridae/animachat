@@ -904,7 +904,8 @@
           "label": "Reasoning Effort",
           "description": "Controls how much internal reasoning the model performs. Higher effort produces more thorough answers but uses more tokens.",
           "options": [
-            { "value": "low", "label": "Low", "description": "Fast, minimal reasoning" },
+            { "value": "minimal", "label": "Minimal", "description": "Almost no internal reasoning — fastest, most direct responses" },
+            { "value": "low", "label": "Low", "description": "Fast, light reasoning" },
             { "value": "medium", "label": "Medium", "description": "Balanced speed and depth" },
             { "value": "high", "label": "High", "description": "Thorough, deep reasoning" }
           ],
