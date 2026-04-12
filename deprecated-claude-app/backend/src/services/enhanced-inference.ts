@@ -135,6 +135,10 @@ const INPUT_PRICING_PER_MILLION: Record<string, number> = {
   'gemini-2.5-flash-imagegen': 0.15,
   'gemini-2.5-flash-image-imagegen': 0.15,
   'gemini-3-pro-imagegen': 1.25,
+
+  // OpenAI models (via OpenRouter)
+  'openai/gpt-5.4': 2.00,
+  'gpt-5.4-openrouter': 2.00,
 };
 
 const OUTPUT_PRICING_PER_MILLION: Record<string, number> = {
@@ -221,6 +225,10 @@ const OUTPUT_PRICING_PER_MILLION: Record<string, number> = {
   'gemini-2.5-flash-imagegen': 0.60,
   'gemini-2.5-flash-image-imagegen': 0.60,
   'gemini-3-pro-imagegen': 5.00,
+
+  // OpenAI models (via OpenRouter)
+  'openai/gpt-5.4': 8.00,
+  'gpt-5.4-openrouter': 8.00,
 };
 
 const CACHE_DISCOUNT = 0.9;

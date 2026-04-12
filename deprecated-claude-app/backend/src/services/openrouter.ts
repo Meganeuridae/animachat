@@ -234,6 +234,11 @@ export class OpenRouterService {
           reasoning: {
             max_tokens: settings.thinking.budgetTokens
           }
+        }),
+
+        // OpenAI reasoning_effort (low/medium/high) for reasoning models like GPT-5.4
+        ...(settings.modelSpecific?.reasoningEffort && {
+          reasoning_effort: settings.modelSpecific.reasoningEffort
         })
       };
       

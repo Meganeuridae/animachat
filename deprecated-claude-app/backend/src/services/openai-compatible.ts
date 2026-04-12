@@ -48,7 +48,11 @@ export class OpenAICompatibleService {
         max_tokens: settings.maxTokens,
         ...(settings.topP !== undefined && { top_p: settings.topP }),
         ...(settings.topK !== undefined && { top_k: settings.topK }),
-        ...(stopSequences && stopSequences.length > 0 && { stop: stopSequences })
+        ...(stopSequences && stopSequences.length > 0 && { stop: stopSequences }),
+        // OpenAI reasoning_effort (low/medium/high) for reasoning models
+        ...(settings.modelSpecific?.reasoningEffort && {
+          reasoning_effort: settings.modelSpecific.reasoningEffort
+        })
       };
 
       // Log the request
