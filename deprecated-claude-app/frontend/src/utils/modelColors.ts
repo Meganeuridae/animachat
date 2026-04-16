@@ -1,6 +1,7 @@
 // Model color definitions
 export const MODEL_COLORS: Record<string, string> = {
   // Claude Opus models
+  'claude-opus-4-7': '#9c27b0',              // Deep purple
   'claude-opus-4-6': '#c850c0',              // Vivid purple
   'claude-opus-4-5-20251101': '#ff6090',     // Warm pink
   'claude-opus-4-1-20250805': '#e07102',     // Deep orange
@@ -76,6 +77,9 @@ export function getModelColor(model: string | undefined): string {
   
   // Claude Opus variants (including Bedrock and OpenRouter)
   // Check most specific first (4.6 before 4.1 before generic 4)
+  if (modelLower.includes('opus-4-7') || modelLower.includes('opus-4.7') || modelLower.includes('opus 4.7')) {
+    return MODEL_COLORS['claude-opus-4-7'];
+  }
   if (modelLower.includes('opus-4-6') || modelLower.includes('opus-4.6') || modelLower.includes('opus 4.6')) {
     return MODEL_COLORS['claude-opus-4-6'];
   }
