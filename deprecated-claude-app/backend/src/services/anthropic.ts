@@ -99,9 +99,12 @@ export class AnthropicService {
         }
       }
       
-      // Ensure max_tokens > budget_tokens when thinking is enabled
+      // Determine if this model uses adaptive thinking (Opus 4.7+) vs legacy enabled thinking
+      const useAdaptiveThinking = modelId.includes('opus-4-7') || modelId.includes('opus-4-8') || modelId.includes('opus-4-9') || modelId.includes('opus-5');
+
+      // Ensure max_tokens > budget_tokens when legacy thinking is enabled
       let effectiveMaxTokens = settings.maxTokens;
-      if (settings.thinking?.enabled && settings.thinking.budgetTokens) {
+      if (!useAdaptiveThinking && settings.thinking?.enabled && settings.thinking.budgetTokens) {
         // max_tokens must be greater than budget_tokens
         // Add reasonable room for the actual response (at least 4096 tokens)
         const minMaxTokens = settings.thinking.budgetTokens + 4096;
@@ -110,11 +113,27 @@ export class AnthropicService {
           effectiveMaxTokens = minMaxTokens;
         }
       }
-      
+
       // Anthropic API doesn't allow both temperature AND top_p/top_k together
       // If temperature is set, don't send top_p/top_k
       const useTemperature = settings.temperature !== undefined;
-      
+
+      // Build thinking config based on model capabilities
+      let thinkingConfig: any = undefined;
+      let outputConfig: any = undefined;
+      if (settings.thinking?.enabled) {
+        if (useAdaptiveThinking) {
+          // Opus 4.7+: adaptive thinking with effort control
+          thinkingConfig = { type: 'adaptive' };
+          const effort = settings.modelSpecific?.thinkingEffort;
+          outputConfig = { effort: typeof effort === 'string' ? effort : 'medium' };
+          console.log(`[Anthropic API] Using adaptive thinking with effort: ${outputConfig.effort}`);
+        } else {
+          // Legacy models: enabled thinking with budget_tokens
+          thinkingConfig = { type: 'enabled', budget_tokens: settings.thinking.budgetTokens };
+        }
+      }
+
       requestParams = {
         model: modelId,
         max_tokens: effectiveMaxTokens,
@@ -123,12 +142,8 @@ export class AnthropicService {
         ...(!useTemperature && settings.topK !== undefined && { top_k: settings.topK }),
         ...(systemContent && { system: systemContent }),
         ...(stopSequences && stopSequences.length > 0 && { stop_sequences: stopSequences }),
-        ...(settings.thinking && settings.thinking.enabled && {
-          thinking: {
-            type: 'enabled',
-            budget_tokens: settings.thinking.budgetTokens
-          }
-        }),
+        ...(thinkingConfig && { thinking: thinkingConfig }),
+        ...(outputConfig && { output_config: outputConfig }),
         messages: anthropicMessages,
         stream: true
       };
