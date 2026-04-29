@@ -384,10 +384,10 @@
     },
     {
       "id": "claude-3.7-sonnet",
-      "providerModelId": "anthropic/claude-3.7-sonnet",
-      "displayName": "Claude 3.7 Sonnet (OpenRouter)",
+      "providerModelId": "eu.anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "displayName": "Claude 3.7 Sonnet (Bedrock EU)",
       "shortName": "Sonnet 3.7",
-      "provider": "openrouter",
+      "provider": "bedrock",
       "hidden": false,
       "contextWindow": 200000,
       "outputTokenLimit": 64000,
