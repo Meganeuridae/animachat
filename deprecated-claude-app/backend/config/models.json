@@ -14,7 +14,8 @@
       "thinkingDefaultEnabled": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -23,9 +24,21 @@
           "label": "Thinking Effort",
           "description": "Controls how much internal reasoning Opus 4.7 performs when extended thinking is enabled.",
           "options": [
-            { "value": "low", "label": "Low", "description": "Light reasoning, faster responses" },
-            { "value": "medium", "label": "Medium", "description": "Balanced depth and speed" },
-            { "value": "high", "label": "High", "description": "Deep, thorough reasoning" }
+            {
+              "value": "low",
+              "label": "Low",
+              "description": "Light reasoning, faster responses"
+            },
+            {
+              "value": "medium",
+              "label": "Medium",
+              "description": "Balanced depth and speed"
+            },
+            {
+              "value": "high",
+              "label": "High",
+              "description": "Deep, thorough reasoning"
+            }
           ],
           "default": "medium"
         }
@@ -69,7 +82,8 @@
       "supportsThinking": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -110,7 +124,8 @@
       "supportsThinking": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -150,7 +165,8 @@
       "outputTokenLimit": 32000,
       "supportsThinking": true,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -232,7 +248,8 @@
       "supportsThinking": true,
       "currencies": {
         "old_sonnets": false,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -272,7 +289,8 @@
       "outputTokenLimit": 32000,
       "supportsThinking": true,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -312,7 +330,8 @@
       "outputTokenLimit": 32000,
       "supportsThinking": true,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -353,7 +372,8 @@
       "supportsThinking": true,
       "currencies": {
         "old_sonnets": false,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -394,7 +414,8 @@
       "supportsThinking": true,
       "currencies": {
         "old_sonnets": false,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -433,7 +454,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "haiku": true
+        "haiku": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -472,7 +494,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "old_sonnets": false
+        "old_sonnets": false,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -511,7 +534,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "old_sonnets": false
+        "old_sonnets": false,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -550,7 +574,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 4096,
       "currencies": {
-        "claude3opus": true
+        "claude3opus": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -589,7 +614,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "old_sonnets": true
+        "old_sonnets": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -628,7 +654,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "old_sonnets": true
+        "old_sonnets": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -667,7 +694,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 4096,
       "currencies": {
-        "old_sonnets": true
+        "old_sonnets": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -706,7 +734,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 4096,
       "currencies": {
-        "haiku": true
+        "haiku": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -745,7 +774,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 8192,
       "currencies": {
-        "old_sonnets": true
+        "old_sonnets": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -778,7 +808,8 @@
       "contextWindow": 200000,
       "outputTokenLimit": 4096,
       "currencies": {
-        "claude3opus": true
+        "claude3opus": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -812,7 +843,8 @@
       "outputTokenLimit": 32000,
       "supportsThinking": true,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -847,7 +879,8 @@
       "supportsThinking": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -882,7 +915,8 @@
       "supportsThinking": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -917,7 +951,8 @@
       "supportsThinking": true,
       "supportsPrefill": false,
       "currencies": {
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -951,7 +986,8 @@
       "outputTokenLimit": 4096,
       "currencies": {
         "openai": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "settings": {
         "temperature": {
@@ -986,7 +1022,8 @@
       "supportsPrefill": false,
       "currencies": {
         "openai": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -995,10 +1032,26 @@
           "label": "Reasoning Effort",
           "description": "Controls how much internal reasoning the model performs. Higher effort produces more thorough answers but uses more tokens.",
           "options": [
-            { "value": "minimal", "label": "Minimal", "description": "Almost no internal reasoning — fastest, most direct responses" },
-            { "value": "low", "label": "Low", "description": "Fast, light reasoning" },
-            { "value": "medium", "label": "Medium", "description": "Balanced speed and depth" },
-            { "value": "high", "label": "High", "description": "Thorough, deep reasoning" }
+            {
+              "value": "minimal",
+              "label": "Minimal",
+              "description": "Almost no internal reasoning \u2014 fastest, most direct responses"
+            },
+            {
+              "value": "low",
+              "label": "Low",
+              "description": "Fast, light reasoning"
+            },
+            {
+              "value": "medium",
+              "label": "Medium",
+              "description": "Balanced speed and depth"
+            },
+            {
+              "value": "high",
+              "label": "High",
+              "description": "Thorough, deep reasoning"
+            }
           ],
           "default": "medium"
         }
@@ -1042,7 +1095,8 @@
       },
       "currencies": {
         "gemini": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1106,7 +1160,8 @@
       "currencies": {
         "gemini": true,
         "gemini-pro": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1155,7 +1210,7 @@
       "id": "gemini-2.5-flash-multimodal",
       "providerModelId": "gemini-2.5-flash-image",
       "displayName": "Gemini 2.5 Flash (Multimodal) [Legacy]",
-      "shortName": "Flash 2.5 🎨",
+      "shortName": "Flash 2.5 \ud83c\udfa8",
       "provider": "google",
       "hidden": true,
       "contextWindow": 32768,
@@ -1171,7 +1226,8 @@
       },
       "currencies": {
         "gemini": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1269,7 +1325,7 @@
       "id": "gemini-2.5-flash-imagegen",
       "providerModelId": "gemini-2.5-flash-image",
       "displayName": "Gemini 2.5 Flash (Image Gen)",
-      "shortName": "Flash 2.5 📷",
+      "shortName": "Flash 2.5 \ud83d\udcf7",
       "provider": "google",
       "hidden": false,
       "contextWindow": 32768,
@@ -1285,7 +1341,8 @@
       },
       "currencies": {
         "gemini": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1400,7 +1457,8 @@
       "currencies": {
         "gemini": true,
         "gemini-pro": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1537,7 +1595,8 @@
       "currencies": {
         "gemini": true,
         "gemini-pro": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
@@ -1657,7 +1716,7 @@
       "id": "gemini-3-pro-imagegen",
       "providerModelId": "gemini-3-pro-image-preview",
       "displayName": "Gemini 3 Pro (Image Gen 4K)",
-      "shortName": "Pro 3 📷",
+      "shortName": "Pro 3 \ud83d\udcf7",
       "provider": "google",
       "hidden": false,
       "contextWindow": 32768,
@@ -1676,7 +1735,8 @@
       "currencies": {
         "gemini": true,
         "gemini-pro": true,
-        "models-2025": true
+        "models-2025": true,
+        "credit": true
       },
       "configurableSettings": [
         {
