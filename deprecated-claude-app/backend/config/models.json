@@ -404,8 +404,8 @@
     },
     {
       "id": "claude-3.7-sonnet",
-      "providerModelId": "eu.anthropic.claude-3-7-sonnet-20250219-v1:0",
-      "displayName": "Claude 3.7 Sonnet (Bedrock EU)",
+      "providerModelId": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "displayName": "Claude 3.7 Sonnet (Bedrock)",
       "shortName": "Sonnet 3.7",
       "provider": "bedrock",
       "hidden": false,
@@ -646,7 +646,7 @@
     },
     {
       "id": "claude-3.6-sonnet-bedrock",
-      "providerModelId": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "providerModelId": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
       "displayName": "Claude 3.6 Sonnet (Bedrock)",
       "shortName": "Sonnet 3.6",
       "provider": "bedrock",
