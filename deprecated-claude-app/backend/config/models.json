@@ -606,7 +606,7 @@
     },
     {
       "id": "claude-3.5-sonnet-bedrock",
-      "providerModelId": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "providerModelId": "apac.anthropic.claude-3-5-sonnet-20240620-v1:0",
       "displayName": "Claude 3.5 Sonnet (Bedrock)",
       "shortName": "Sonnet 3.5",
       "provider": "bedrock",
@@ -686,7 +686,7 @@
     },
     {
       "id": "claude-3-sonnet-bedrock",
-      "providerModelId": "anthropic.claude-3-sonnet-20240229-v1:0",
+      "providerModelId": "apac.anthropic.claude-3-sonnet-20240229-v1:0",
       "displayName": "Claude 3 Sonnet (Bedrock)",
       "shortName": "Sonnet 3",
       "provider": "bedrock",
@@ -726,7 +726,7 @@
     },
     {
       "id": "claude-3-haiku-bedrock",
-      "providerModelId": "anthropic.claude-3-haiku-20240307-v1:0",
+      "providerModelId": "apac.anthropic.claude-3-haiku-20240307-v1:0",
       "displayName": "Claude 3 Haiku (Bedrock)",
       "shortName": "Haiku 3",
       "provider": "bedrock",
