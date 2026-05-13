@@ -16,7 +16,8 @@ import katex from 'katex';
  *   1. extractMath(content) → replaces math regions with placeholder tokens
  *      and returns the substituted text plus a map of rendered HTML.
  *   2. marked.parse() runs on the substituted text. Placeholders survive
- *      because they're plain alphanumerics.
+ *      because they sit between Private Use Area unicode brackets that no
+ *      markdown rule touches.
  *   3. restoreMath(html, map) substitutes the rendered HTML back in.
  *
  * Currency-safety: the `$...$` inline matcher is intentionally strict —
@@ -40,12 +41,21 @@ const BASE_OPTIONS: Omit<KatexOptions, 'displayMode'> = {
   output: 'html',
 };
 
-// Placeholder tokens use a private-use unicode prefix so they can't appear
-// in user content, then plain ASCII so markdown won't transform them.
-const PLACEHOLDER_PREFIX = 'ARCMATH';
-const PLACEHOLDER_SUFFIX = '';
+// Placeholder tokens use a Private Use Area unicode bracket around an ASCII
+// body. The PUA characters (U+E000 / U+E001) are not assigned to any script,
+// effectively never appear in normal text or model output, and aren't
+// markdown-special — so (a) collision risk with real content is effectively
+// zero, and (b) marked.parse() passes them through unchanged. The body
+// stays ASCII (`ARCMATH<N>`) so the placeholder is still grep-friendly in
+// dev. The trailing PUA bracket also disambiguates adjacent multi-digit
+// indices, which a greedy `\d+` regex would otherwise tangle (e.g.
+// `ARCMATH1ARCMATH23` could be misparsed as a single match).
+const PLACEHOLDER_OPEN = '';
+const PLACEHOLDER_CLOSE = '';
+const PLACEHOLDER_PREFIX = `${PLACEHOLDER_OPEN}ARCMATH`;
+const PLACEHOLDER_SUFFIX = PLACEHOLDER_CLOSE;
 const PLACEHOLDER_RE = new RegExp(
-  `${PLACEHOLDER_PREFIX}(\\d+)${PLACEHOLDER_SUFFIX}`,
+  `${PLACEHOLDER_OPEN}ARCMATH(\\d+)${PLACEHOLDER_CLOSE}`,
   'g',
 );
 
@@ -69,15 +79,22 @@ function renderToHtml(latex: string, displayMode: boolean, original: string): st
  *   - No newlines inside the match (would suggest paragraph break, not math).
  *   - Not part of `$$` (handled separately as display math).
  *
+ * The capture group is an alternation so both single-char (`$n$`, `$x$`,
+ * `$k$` — very common in mathematical prose) and multi-char (`$x + 1$`,
+ * `$\frac{a}{b}$`) bodies match. The original single-branch regex
+ * `[^\s\d$][^\n$]*?[^\s$]` required at least two distinct characters and
+ * silently dropped single-letter inline math.
+ *
  * Examples:
- *   ✓  `$x + 1$`           — letter follows opening, no digit issues
- *   ✓  `$\\frac{1}{2}$`    — backslash follows opening
- *   ✗  `$100`              — digit follows opening
- *   ✗  `strike $110, $3`   — digit follows opening
- *   ✗  `cost is $ 50 $`    — whitespace follows opening
+ *   ✓  `$n$`              — single letter
+ *   ✓  `$x + 1$`          — letter follows opening, no digit issues
+ *   ✓  `$\frac{1}{2}$`    — backslash follows opening
+ *   ✗  `$100`             — digit follows opening
+ *   ✗  `strike $110, $3`  — digit follows opening
+ *   ✗  `cost is $ 50 $`   — whitespace follows opening
  */
 const INLINE_DOLLAR_RE =
-  /(?<!\$)\$(?!\$)([^\s\d$][^\n$]*?[^\s$])\$(?!\d)/g;
+  /(?<!\$)\$(?!\$)([^\s\d$][^\n$]*?[^\s$]|[^\s\d$])\$(?!\d)/g;
 
 /**
  * Extract math regions from raw model output, replacing them with placeholder
