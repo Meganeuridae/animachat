@@ -9,6 +9,7 @@ import { ApiKeyManager } from './api-key-manager.js';
 import { ModelLoader } from '../config/model-loader.js';
 import { Logger } from '../utils/logger.js';
 import { ContextManager } from './context-manager.js';
+import { isImageFile } from './attachment-utils.js';
 
 // Internal format type that includes 'messages', 'completion', and 'pseudo-prefill' modes
 // - 'standard': Traditional alternating user/assistant (no participant names)
@@ -1061,14 +1062,10 @@ export class InferenceService {
       let messageIndex = 0;  // Track index for cache breakpoints
       let messageOrder = 1;  // For ordering output messages
       
-      // Helper to check if an attachment is an image
-      const isImageAttachment = (attachment: any): boolean => {
-        // Note: GIF excluded - Anthropic API has issues with some GIF formats
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-        const fileExtension = attachment.fileName?.split('.').pop()?.toLowerCase() || '';
-        return imageExtensions.includes(fileExtension) && !!attachment.content;
-      };
-      
+      // Helper to check if an attachment is an image with data to send.
+      const isImageAttachment = (attachment: any): boolean =>
+        isImageFile(attachment.fileName) && !!attachment.content;
+
       // Helper to flush current conversation content as an assistant message
       const flushAssistantContent = () => {
         if (conversationContent.trim()) {
@@ -1271,12 +1268,9 @@ export class InferenceService {
         Logger.inference(`[PseudoPrefill] Injecting persona context (${Math.ceil(personaContext.length / 4)} est. tokens) into conversation log`);
       }
 
-      // Helper to check if an attachment is an image
-      const isImageAttachmentPP = (attachment: any): boolean => {
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-        const fileExtension = attachment.fileName?.split('.').pop()?.toLowerCase() || '';
-        return imageExtensions.includes(fileExtension) && !!attachment.content;
-      };
+      // Helper to check if an attachment is an image with data to send.
+      const isImageAttachmentPP = (attachment: any): boolean =>
+        isImageFile(attachment.fileName) && !!attachment.content;
 
       // Track image messages that need separate user turns
       const imageTurns: Message[] = [];
@@ -1501,11 +1495,8 @@ export class InferenceService {
         // on the branch for providers (like Anthropic) that support multimodal inputs
         if (role === 'user' && activeBranch.attachments && activeBranch.attachments.length > 0) {
           for (const attachment of activeBranch.attachments) {
-            // Note: GIF excluded - Anthropic API has issues with some GIF formats
-            const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-            const fileExtension = attachment.fileName?.split('.').pop()?.toLowerCase() || '';
-            const isImage = imageExtensions.includes(fileExtension);
-            
+            const isImage = isImageFile(attachment.fileName);
+
             if (isImage) {
               formattedContent += `\n\n[Image attachment: ${attachment.fileName}]`;
             } else {
