@@ -2,12 +2,12 @@
  * Shared utilities for handling message attachments across providers.
  *
  * Background: prior to this module, "is this filename an image?" was
- * reimplemented in five places (anthropic.ts, bedrock.ts, openrouter.ts,
- * inference.ts ×2) with subtle drift — most notably, four of them excluded
- * GIF with the comment "Anthropic API has issues with some GIF formats"
- * while OpenRouter silently allowed it. That meant the same Claude model
- * would accept a GIF when routed through OpenRouter but reject it when
- * routed through Bedrock or Anthropic-direct.
+ * reimplemented in six places (anthropic.ts, bedrock.ts, openrouter.ts,
+ * inference.ts ×3, context-strategies.ts) with subtle drift — most notably,
+ * five of them excluded GIF with the comment "Anthropic API has issues with
+ * some GIF formats" while OpenRouter silently allowed it. That meant the
+ * same Claude model would accept a GIF when routed through OpenRouter but
+ * reject it when routed through Bedrock or Anthropic-direct.
  *
  * The Anthropic Messages API documents image/jpeg, image/png, image/gif,
  * and image/webp as supported media types (animated GIFs are processed as
