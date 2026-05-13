@@ -41,6 +41,13 @@ dotenv.config();
 
 const app = express();
 
+// Honor X-Forwarded-For from the local nginx so `req.ip` is the real
+// client IP. Required for per-IP rate limiting to be meaningful — without
+// this, every request looks like it comes from the loopback nginx.
+// `'loopback'` is the safe choice: trust only the nginx running on the
+// same host, never accept the header from a public-internet client.
+app.set('trust proxy', 'loopback');
+
 // Initialize database
 const db = new Database();
 
