@@ -3,6 +3,7 @@ import { Message, getActiveBranch, ModelSettings } from '@deprecated-claude/shar
 import { Database } from '../database/index.js';
 import { llmLogger } from '../utils/llmLogger.js';
 import sharp from 'sharp';
+import { isImageFile } from './attachment-utils.js';
 
 // Image size limit - Anthropic/Bedrock limit is 5MB, we target 4MB to have margin
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
@@ -242,10 +243,7 @@ export class BedrockService {
   }
 
   private isImageAttachment(fileName: string): boolean {
-    // Note: GIF excluded - Anthropic API has issues with some GIF formats
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-    const extension = fileName.split('.').pop()?.toLowerCase() || '';
-    return imageExtensions.includes(extension);
+    return isImageFile(fileName);
   }
   
   private isPdfAttachment(fileName: string): boolean {

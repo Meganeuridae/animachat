@@ -4,6 +4,7 @@ import { getBlobStore } from '../database/blob-store.js';
 import { llmLogger } from '../utils/llmLogger.js';
 import { Logger } from '../utils/logger.js';
 import { logOpenRouterRequest, logOpenRouterResponse } from '../utils/openrouterLogger.js';
+import { isImageFile } from './attachment-utils.js';
 
 interface OpenRouterMessage {
   role: 'user' | 'assistant' | 'system';
@@ -724,7 +725,7 @@ export class OpenRouterService {
           
           for (const attachment of activeBranch.attachments) {
             const extension = attachment.fileName.split('.').pop()?.toLowerCase() || '';
-            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension);
+            const isImage = isImageFile(attachment.fileName);
             const isPdf = extension === 'pdf';
             
             if (isImage) {
